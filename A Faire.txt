@@ -1,0 +1,8 @@
+Création des polygones avec shapefile et polygone de fltk
+
+
+Choix des couleurs en se basanr sur les données du csv 
+
+
+
+Animation sur des dates (a voir plus tard)
