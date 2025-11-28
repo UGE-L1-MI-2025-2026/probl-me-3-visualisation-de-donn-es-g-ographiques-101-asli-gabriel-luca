@@ -14,11 +14,11 @@ seine_et_marne.bbox # Les points extrémaux de la seine-et-marne
 var = seine_et_marne.points
 
 for i in range(len(var)):
-    var[i] = (SCALE * (90 + var[i][0]),
-              SCALE * (LAR_FENETRE - (var[i][1] + 90))
-              )# latitude et longitude entre -90 et 90
+    var[i] = (SCALE * var[i][0],
+              SCALE * (90 - var[i][1]))
                # Les ordonnées vont du haut au bas de l'écran sur python
-               # donc on fait une soustraction
+               # donc on fait une soustraction. La longitude max est de 90 donc
+               # on soustrait la longitude à 90 pour "retourner" l'image"
 
 fltk.cree_fenetre(LONG_FENETRE, LAR_FENETRE)
 fltk.polygone(var,tag="seine")
