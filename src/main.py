@@ -29,7 +29,6 @@ with open(
                                  'TMax': row[4],
                                  'TMoy': row[5]
                                  }
-breakpoint()
 
 SCALE = 100
 LAR_FENETRE = 600
