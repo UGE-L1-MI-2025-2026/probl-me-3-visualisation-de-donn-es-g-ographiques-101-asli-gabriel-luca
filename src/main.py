@@ -16,12 +16,16 @@ temp_dep = {}
 
 def mercator_pts(shape):
     pts = shape.points
+    parts = list(shape.parts) + [len(pts)]
     out = []
-    for i in range(len(pts)):
-        phi = math.radians(pts[i][1])
-        x = math.radians(pts[i][0])
-        y = math.log(math.tan(math.pi / 4 + phi / 2))
-        out.append((x, y))
+    for idx0, idx1 in zip(parts[:-1], parts[1:]):
+        poly = []
+        for i in range(idx0, idx1):
+            phi = math.radians(pts[i][1])
+            x = math.radians(pts[i][0])
+            y = math.log(math.tan(math.pi / 4 + phi / 2))
+            poly.append((x, y))
+        out.append(poly)
     return out
 
 def calcule_parametres(x_min, y_min, x_max, y_max, X_orig, Y_orig, W, H):
@@ -62,12 +66,14 @@ liste_poly = []
 long_min, lat_min, long_max, lat_max = 91, 91, -91, -91
 for i in range(102):
     depart = sf.shape(i)
-    pts = mercator_pts(sf.shape(i))
-    long_min = min([x for x, y in pts] + [long_min])
-    lat_min = min([y for x, y in pts] + [lat_min])
-    long_max = max([x for x, y in pts] + [long_max])
-    lat_max = max([y for x, y in pts] + [lat_max])
-    liste_poly.append(pts)
+    poly_depart = mercator_pts(sf.shape(i))
+    longitudes = [x for pts in poly_depart for x, y in pts]
+    latitudes = [y for pts in poly_depart for x, y in pts]
+    long_min = min(longitudes + [long_min])
+    lat_min = min(latitudes + [lat_min])
+    long_max = max(longitudes + [long_max])
+    lat_max = max(latitudes + [lat_max])
+    liste_poly += poly_depart
 
 a, B, C = calcule_parametres(long_min, lat_min, long_max, lat_max, 0, 0, LARG_FENETRE, LONG_FENETRE)
 for pts in liste_poly:
