@@ -63,19 +63,19 @@ sf.records()  # visualisation de toutes les entrées du fichier
 
 fltk.cree_fenetre(LARG_FENETRE, LONG_FENETRE)
 liste_poly = []
-long_min, lat_min, long_max, lat_max = 91, 91, -91, -91
+y_min, x_min, y_max, x_max = float("inf"), float("inf"), float("-inf"), float("-inf")
 for i in range(102):
     depart = sf.shape(i)
     poly_depart = mercator_pts(sf.shape(i))
-    longitudes = [x for pts in poly_depart for x, y in pts]
-    latitudes = [y for pts in poly_depart for x, y in pts]
-    long_min = min(longitudes + [long_min])
-    lat_min = min(latitudes + [lat_min])
-    long_max = max(longitudes + [long_max])
-    lat_max = max(latitudes + [lat_max])
+    ordonnees = [x for pts in poly_depart for x, y in pts]
+    abcisses = [y for pts in poly_depart for x, y in pts]
+    y_min = min(ordonnees + [y_min])
+    x_min = min(abcisses + [x_min])
+    y_max = max(ordonnees + [y_max])
+    x_max = max(abcisses + [x_max])
     liste_poly += poly_depart
 
-a, B, C = calcule_parametres(long_min, lat_min, long_max, lat_max, 0, 0, LARG_FENETRE, LONG_FENETRE)
+a, B, C = calcule_parametres(y_min, x_min, y_max, x_max, 0, 0, LARG_FENETRE, LONG_FENETRE)
 for pts in liste_poly:
     new_pts = []
     for x, y in pts:
