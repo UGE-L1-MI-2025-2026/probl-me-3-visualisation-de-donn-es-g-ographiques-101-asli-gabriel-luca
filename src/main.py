@@ -27,12 +27,12 @@ def creation_depart(shape):
 def calcule_parametres(x_min, y_min, x_max, y_max, X_orig, Y_orig, W, H):
     a = min(W / (x_max - x_min), H / (y_max - y_min))
     B = X_orig - a * x_min  # centre : + W/2
-    C = Y_orig - a * y_min  # centre : + H/2
+    C = Y_orig + a * y_min  # centre : + H/2
     return a, B, C
 
-def place_points(x, y, a, B, C):
+def place_points(x, y, a, B, C, LONG_FENETRE):
     X = a * x + B
-    Y = a * -y + C
+    Y = LONG_FENETRE - a * y + C
     return X, Y
 
 with open(
@@ -52,23 +52,25 @@ with open(
                                  'TMoy': row[5]
                                  }
 
-LAR_FENETRE = 600
-LONG_FENETRE = 800
+LONG_FENETRE = 600
+LARG_FENETRE = 800
 sf = shapefile.Reader(path.join(MAP_DATA_DIR, "departements-20180101"))
 sf.records()  # visualisation de toutes les entrées du fichier
 
 
 
 # tests
-fltk.cree_fenetre(LONG_FENETRE, LAR_FENETRE)
-seine_et_marne = sf.shape(47)
-long_min, lat_min, long_max, lat_max = seine_et_marne.bbox
-pts = seine_et_marne.points
-a, B, C = calcule_parametres(long_min, lat_min, long_max, lat_max, 0, 0, LAR_FENETRE, LONG_FENETRE)
-for x, y in zip(pts[::2], pts[1::2]):
-    print(place_points(x, y, a, B, C))
+fltk.cree_fenetre(LARG_FENETRE, LONG_FENETRE)
+# seine_et_marne = sf.shape(47)
+# long_min, lat_min, long_max, lat_max = seine_et_marne.bbox
+# pts = seine_et_marne.points
+# a, B, C = calcule_parametres(long_min, lat_min, long_max, lat_max, 0, 0, LARG_FENETRE, LONG_FENETRE)
+# new_pts = []
+# for x, y in pts:
+    # new_pts.append(place_points(x, y, a, B, C, LONG_FENETRE))
+# breakpoint()
+# fltk.polygone(new_pts, tag='foo')
     
-breakpoint()
 
 #####
 for i in range(102):
