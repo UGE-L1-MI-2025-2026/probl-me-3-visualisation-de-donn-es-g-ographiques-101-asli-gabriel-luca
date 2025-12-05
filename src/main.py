@@ -9,18 +9,18 @@ ROOT_DIR = path.dirname(path.dirname(__file__))
 ASSETS_DIR = path.join(ROOT_DIR, 'assets')
 MAP_DATA_DIR = path.join(ASSETS_DIR, 'map_data')
 IMG_DIR = path.join(ASSETS_DIR, 'images')
-SCALE = 2300
-y_max = SCALE * math.log(math.tan(math.pi / 4 + 44))
+LONG_FENETRE = 600
+LARG_FENETRE = 800
 temp_dep = {}
 
 
-def creation_depart(shape):
+def mercator_pts(shape):
     pts = shape.points
     out = []
     for i in range(len(pts)):
         phi = math.radians(pts[i][1])
-        x = SCALE * math.radians(pts[i][0])
-        y = y_max - SCALE * math.log(math.tan(math.pi / 4 + phi / 2))
+        x = math.radians(pts[i][0])
+        y = math.log(math.tan(math.pi / 4 + phi / 2))
         out.append((x, y))
     return out
 
@@ -52,32 +52,29 @@ with open(
                                  'TMoy': row[5]
                                  }
 
-LONG_FENETRE = 600
-LARG_FENETRE = 800
 sf = shapefile.Reader(path.join(MAP_DATA_DIR, "departements-20180101"))
 sf.records()  # visualisation de toutes les entrées du fichier
 
 
 
-# tests
 fltk.cree_fenetre(LARG_FENETRE, LONG_FENETRE)
-# seine_et_marne = sf.shape(47)
-# long_min, lat_min, long_max, lat_max = seine_et_marne.bbox
-# pts = seine_et_marne.points
-# a, B, C = calcule_parametres(long_min, lat_min, long_max, lat_max, 0, 0, LARG_FENETRE, LONG_FENETRE)
-# new_pts = []
-# for x, y in pts:
-    # new_pts.append(place_points(x, y, a, B, C, LONG_FENETRE))
-# breakpoint()
-# fltk.polygone(new_pts, tag='foo')
-    
-
-#####
+liste_poly = []
+long_min, lat_min, long_max, lat_max = 91, 91, -91, -91
 for i in range(102):
     depart = sf.shape(i)
-    pts = creation_depart(sf.shape(i))
-    fltk.polygone(pts, tag=str(i))
-    fltk.deplace(str(i), 300, 2325)
+    pts = mercator_pts(sf.shape(i))
+    long_min = min([x for x, y in pts] + [long_min])
+    lat_min = min([y for x, y in pts] + [lat_min])
+    long_max = max([x for x, y in pts] + [long_max])
+    lat_max = max([y for x, y in pts] + [lat_max])
+    liste_poly.append(pts)
+
+a, B, C = calcule_parametres(long_min, lat_min, long_max, lat_max, 0, 0, LARG_FENETRE, LONG_FENETRE)
+for pts in liste_poly:
+    new_pts = []
+    for x, y in pts:
+        new_pts.append(place_points(x, y, a, B, C, LONG_FENETRE))
+    fltk.polygone(new_pts)
 # coords = fltk.coordonnees_objet("seine")
 # print(coords)
 # offset_x = -1 * min(x[0] for x in coords)
